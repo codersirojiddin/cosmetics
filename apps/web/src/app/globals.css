@@ -1,0 +1,121 @@
+@import "tailwindcss";
+
+@theme {
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --color-paper: #f6f3ee;
+  --color-card: #fffdfa;
+  --color-ink: #171512;
+  --color-muted: #6b655c;
+  --color-line: #e3ddd2;
+  --color-accent: #a8554b;
+  --color-accent-soft: #f3e3df;
+  --color-ok: #2f6b4f;
+  --color-warn: #9a6a12;
+  --color-bad: #a33a30;
+  --color-info: #3a5a8c;
+  --color-violet: #6b4a8c;
+}
+
+@layer base {
+  html {
+    background: var(--color-paper);
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    font-family: var(--font-mono);
+    color: var(--color-ink);
+    background: var(--color-paper);
+    -webkit-font-smoothing: antialiased;
+    font-size: 14px;
+    line-height: 1.6;
+    font-variant-numeric: tabular-nums;
+  }
+  ::selection {
+    background: var(--color-ink);
+    color: var(--color-paper);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+  button:not(:disabled),
+  [role="button"],
+  summary {
+    cursor: pointer;
+  }
+  button:disabled {
+    cursor: not-allowed;
+  }
+  input,
+  select,
+  textarea {
+    font: inherit;
+  }
+}
+
+/* Long-form text (descriptions) is easier to read in a proportional face. */
+.prose-sans {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.7;
+  color: #2a2723;
+  overflow-wrap: anywhere;
+}
+.prose-sans > :last-child {
+  margin-bottom: 0;
+}
+.prose-sans p {
+  margin: 0 0 0.9em;
+}
+.prose-sans ul,
+.prose-sans ol {
+  margin: 0 0 0.9em;
+  padding-left: 1.3em;
+}
+.prose-sans ul {
+  list-style: disc;
+}
+.prose-sans ol {
+  list-style: decimal;
+}
+.prose-sans li {
+  margin: 0.2em 0;
+}
+.prose-sans h1,
+.prose-sans h2,
+.prose-sans h3 {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 12px;
+  margin: 1.4em 0 0.6em;
+}
+.prose-sans a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.prose-sans blockquote {
+  border-left: 2px solid var(--color-line);
+  padding-left: 1em;
+  color: var(--color-muted);
+}
+
+/* Leaflet marker without image assets */
+.pin {
+  width: 18px;
+  height: 18px;
+  background: var(--color-accent);
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 1.5px var(--color-ink);
+  border-radius: 50%;
+}
+
+.label-xs {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}

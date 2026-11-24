@@ -54,3 +54,26 @@ services:
         sync: false
       - key: S3_PUBLIC_BASE_URL
         sync: false
+
+  - type: web
+    name: cosmetics-web
+    runtime: node
+    region: frankfurt
+    plan: starter
+    rootDir: apps/web
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm build
+    startCommand: pnpm start
+    healthCheckPath: /
+    autoDeploy: true
+    buildFilter:
+      paths:
+        - apps/web/**
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: NEXT_PUBLIC_SHOP_NAME
+        value: Cosmetics
+      - key: NEXT_PUBLIC_API_URL   # https://cosmetics-api.onrender.com (inlined at build time: set before the first deploy)
+        sync: false
+      - key: API_URL               # same URL, used by server-side rendering
+        sync: false

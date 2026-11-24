@@ -3,13 +3,13 @@
 Telegram orqali kirish, mahsulot tanlash, **chek rasmini yuklab** buyurtma berish va admin tomonidan tekshirib yuborish.
 To'lov tizimi yo'q: mijoz kartaga pul o'tkazadi va chekni yuklaydi, admin tekshiradi.
 
-**Holat:** backend (API + Telegram bot) tayyor va testlangan. Admin panel va mijoz sayti (`apps/web`) keyingi bosqich.
+**Holat:** backend (API + Telegram bot), mijoz sayti va admin panel tayyor.
 
 ```
 apps/api     Go backend (chi + pgx + Telegram bot), web va mobile uchun bitta API
-apps/web     (keyingi bosqich) Next.js: mijoz sayti + /admin panel
+apps/web     Next.js: mijoz sayti (katalog, checkout, buyurtmalarim) va /admin panel
 docs/API.md  API qo'llanmasi
-render.yaml  Render uchun Blueprint
+render.yaml  Render uchun Blueprint (api + web)
 ```
 
 ## Tezkor ishga tushirish (lokal)
@@ -28,6 +28,27 @@ make test                     # TEST_DATABASE_URL nomida "_test" bo'lgan bazani 
 
 Testlar `cosmetics_test` bazasini **to'liq tozalaydi**, shuning uchun nomida `_test` bo'lmagan bazaga ulanishni rad etadi.
 
+### Web (Next.js)
+
+Kerak: Node 22+, pnpm.
+
+```bash
+cd apps/web
+cp .env.example .env.local    # NEXT_PUBLIC_API_URL=http://localhost:8080
+pnpm install
+pnpm dev                      # http://localhost:3000
+pnpm typecheck && pnpm build
+```
+
+**Telegramsiz sinash (faqat dev):** `cd apps/api && go run ./cmd/devtoken -tg 3001 -name Ali -role customer` token chiqaradi
+(`-role admin` yoki `owner` ham mumkin). Brauzer konsolida:
+
+```js
+localStorage.setItem("cosmetics.session", JSON.stringify({ access: "<accessToken>", refresh: "<refreshToken>", expiresAt: Date.now() + 900000 }))
+```
+
+Keyin sahifani yangilang: shu foydalanuvchi sifatida kirgan bo'lasiz. `devtoken` production'da ishlamaydi.
+
 ## Telegram bot
 
 1. Telegram'da **@BotFather** → `/newbot` → token oling → `TELEGRAM_BOT_TOKEN`.
@@ -40,7 +61,10 @@ Testlar `cosmetics_test` bazasini **to'liq tozalaydi**, shuning uchun nomida `_t
 
 1. **Neon** (Frankfurt): `DATABASE_URL` = *pooled* manzil (`...-pooler...`), `DIRECT_URL` = shu manzildan `-pooler` ni olib tashlangani. `channel_binding=require` ni ilova o'zi e'tiborsiz qoldiradi.
 2. **Cloudflare R2:** ikkita bucket oching: `public` (mahsulot rasmlari; ochiq domen yoqing → `S3_PUBLIC_BASE_URL`) va `private` (cheklar; hech qachon ochiq qilmang). Ikkala bucketga yozish huquqli API kalit yarating.
-3. **Render:** New → Blueprint → shu repo. `render.yaml` o'qiladi, maxfiy qiymatlarni dashboard'da kiritasiz. Birinchi deploydan keyin servis URL'ini `PUBLIC_API_URL` ga yozib qayta deploy qiling.
+3. **Render:** New → Blueprint → shu repo. `render.yaml` ikkita servis yaratadi: `cosmetics-api` va `cosmetics-web`. Maxfiy qiymatlarni dashboard'da kiritasiz.
+   - Avval API deploy bo'ladi: uning URL'ini `PUBLIC_API_URL` ga yozing.
+   - Web uchun `NEXT_PUBLIC_API_URL` va `API_URL` ga API URL'ini kiriting (`NEXT_PUBLIC_*` build vaqtida o'rnatiladi, shuning uchun web'ning birinchi deployidan **oldin** kiriting).
+   - API'da `CORS_ORIGINS` va `WEB_URL` ga web URL'ini yozing, so'ng API'ni qayta deploy qiling.
 4. Migratsiyalar har ishga tushganda avtomatik qo'llanadi (`AUTO_MIGRATE=true`, bitta instance).
 5. Render'ning **bepul** rejasi 15 daqiqa harakatsizlikdan keyin uxlaydi: test uchun yaxshi, do'kon uchun `starter`.
 
