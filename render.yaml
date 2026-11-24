@@ -1,0 +1,56 @@
+# Render Blueprint. Create it with: Render dashboard -> New -> Blueprint -> pick this repo.
+# Secrets (sync: false) are asked for once in the dashboard; they are never stored in git.
+services:
+  - type: web
+    name: cosmetics-api
+    runtime: docker
+    region: frankfurt            # keep it the same region as the Neon project
+    plan: starter                # "free" services sleep after ~15 min idle: fine for tests, not for a shop
+    dockerfilePath: ./apps/api/Dockerfile
+    dockerContext: ./apps/api
+    healthCheckPath: /healthz
+    autoDeploy: true
+    buildFilter:
+      paths:
+        - apps/api/**
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: AUTO_MIGRATE        # applies pending SQL migrations on boot (single instance)
+        value: "true"
+      - key: BOT_MODE
+        value: webhook
+      - key: STORAGE_DRIVER
+        value: s3
+      - key: S3_REGION
+        value: auto
+      - key: JWT_SECRET
+        generateValue: true
+      - key: TELEGRAM_WEBHOOK_SECRET
+        generateValue: true
+      - key: DATABASE_URL        # Neon pooled connection string
+        sync: false
+      - key: DIRECT_URL          # Neon direct (non-pooler) connection string
+        sync: false
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: OWNER_TELEGRAM_IDS
+        sync: false
+      - key: PUBLIC_API_URL      # https://<service>.onrender.com (or your domain)
+        sync: false
+      - key: WEB_URL
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false
+      - key: S3_ENDPOINT
+        sync: false
+      - key: S3_ACCESS_KEY
+        sync: false
+      - key: S3_SECRET_KEY
+        sync: false
+      - key: S3_BUCKET_PUBLIC
+        sync: false
+      - key: S3_BUCKET_PRIVATE
+        sync: false
+      - key: S3_PUBLIC_BASE_URL
+        sync: false
