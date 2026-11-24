@@ -247,6 +247,15 @@ func TestCatalogAdminAndStorefront(t *testing.T) {
 	_, r = e.do("GET", "/products", "", nil)
 	require.EqualValues(t, 1, num(r, "total"))
 
+	// category responses carry the image id so the admin form can re-send it on edit
+	st, r = e.upload("/admin/uploads/image?kind=category", s.admin.token, pic(902))
+	require.Equal(t, 201, st, r)
+	catImg := str(r, "id")
+	st, r = e.do("PUT", "/admin/categories/"+s.category, s.admin.token, J{"name": "Yuz parvarishi", "imageId": catImg, "position": 0})
+	require.Equal(t, 200, st, r)
+	require.Equal(t, catImg, str(r, "imageId"))
+	require.NotEmpty(t, str(r, "image", "thumb"))
+
 	// categories with products cannot be deleted
 	st, r = e.do("DELETE", "/admin/categories/"+s.category, s.admin.token, nil)
 	require.Equal(t, 409, st)

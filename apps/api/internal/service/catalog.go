@@ -27,6 +27,7 @@ type CategoryView struct {
 	Position     int        `json:"position"`
 	IsActive     bool       `json:"isActive"`
 	ProductCount int        `json:"productCount"`
+	ImageID      string     `json:"imageId"` // needed by the admin form so editing keeps the image
 	Image        *ImageURLs `json:"image"`
 }
 
@@ -98,6 +99,7 @@ func (c *Catalog) Categories(ctx context.Context, onlyActive bool) ([]CategoryVi
 	for _, ct := range cats {
 		v := CategoryView{ID: ct.ID, Name: ct.Name, Slug: ct.Slug, Position: ct.Position, IsActive: ct.IsActive, ProductCount: ct.ProductCount}
 		if ct.ImageFileID != nil {
+			v.ImageID = *ct.ImageFileID
 			if f, ok := files[*ct.ImageFileID]; ok {
 				v.Image = c.s.imageURLs(f.Variants)
 			}
